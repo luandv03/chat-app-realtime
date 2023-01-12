@@ -13,5 +13,6 @@ import { ChatService } from './service/chat.service';
   ],
   controllers: [ChatController],
   providers: [ChatRepository, ChatService],
+  exports: [ChatRepository],
 })
 export class ChatModule {}
