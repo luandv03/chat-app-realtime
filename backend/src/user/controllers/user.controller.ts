@@ -22,7 +22,7 @@ export class UserController {
   @Get('/search')
   async findUserWithSeach(
     @Req() req: Request,
-    @Query('fullname') search: string,
+    @Query('value') search: string,
   ): Promise<any> {
     return this.userService.findUserWithSearch(req.user, search);
   }

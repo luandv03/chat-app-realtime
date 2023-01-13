@@ -81,23 +81,26 @@ export class UserService {
 
   //search users with email or fullname
   async findUserWithSearch(user: any, searchValue: string): Promise<any> {
-    const users = await this.userRepository.getByCondition({
-      $or: [
-        {
-          $expr: {
-            $regexMatch: {
-              input: { $concat: ['$firstname', ' ', '$lastname'] },
-              regex: searchValue,
-              options: 'i',
+    const users = await this.userRepository.getByCondition(
+      {
+        $or: [
+          {
+            $expr: {
+              $regexMatch: {
+                input: { $concat: ['$firstname', ' ', '$lastname'] },
+                regex: searchValue,
+                options: 'i',
+              },
             },
           },
-        },
-        {
-          email: { $regex: searchValue, $options: 'i' },
-        },
-      ],
-      _id: { $ne: user._id },
-    });
+          {
+            email: { $regex: searchValue, $options: 'i' },
+          },
+        ],
+        _id: { $ne: user._id },
+      },
+      '-password -refreshToken',
+    );
 
     return users;
   }
