@@ -1,5 +1,16 @@
-import { Controller, Req, Get, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Req,
+  Get,
+  Query,
+  UseGuards,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+  Body,
+} from '@nestjs/common';
 import { Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from '../service/user.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
@@ -14,5 +25,16 @@ export class UserController {
     @Query('fullname') search: string,
   ): Promise<any> {
     return this.userService.findUserWithSearch(req.user, search);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadImage(@UploadedFile() file: Express.Multer.File) {
+    return this.userService.uploadImageToCloudinary(file);
+  }
+
+  @Post('remove_image')
+  removeImage(@Body('public_id') public_id: string) {
+    return this.userService.destroyImageInCloudinary(public_id);
   }
 }

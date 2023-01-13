@@ -1,5 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Express } from 'express';
 import { CreateUserDto, LoginUserDto } from '../dto/user.dto';
 import { UserService } from './user.service';
 import { jwtConstrant } from '../constrant/jwt.constrant';
@@ -11,7 +12,15 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
-  async register(createUserDto: CreateUserDto): Promise<any> {
+  async register(
+    createUserDto: CreateUserDto,
+    file?: Express.Multer.File,
+  ): Promise<any> {
+    if (file) {
+      const avatar = await this.userService.uploadImageToCloudinary(file);
+      createUserDto.avatar = { public_id: avatar.public_id, url: avatar.url };
+    }
+
     const user = await this.userService.create(createUserDto);
     const token = await this._createToken(user.email);
 

@@ -10,6 +10,7 @@ import { AuthController } from './controllers/auth.controller';
 import { JwtStrategy } from './strategies/jwt-auth.strategy';
 import { jwtConstrant } from './constrant/jwt.constrant';
 import { UserController } from './controllers/user.controller';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UserController } from './controllers/user.controller';
       secret: jwtConstrant.SECRET_KEY,
       signOptions: { expiresIn: jwtConstrant.EXPIRES_IN },
     }),
+    CloudinaryModule,
   ],
   controllers: [AuthController, UserController],
   providers: [UserRepository, UserService, JwtStrategy, AuthService],

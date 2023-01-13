@@ -2,10 +2,14 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { CreateUserDto } from '../dto/user.dto';
 import * as bcrypt from 'bcrypt';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   async create(user: CreateUserDto): Promise<any> {
     const userExisted = await this.findByEmail(user.email);
@@ -96,5 +100,15 @@ export class UserService {
     });
 
     return users;
+  }
+
+  async uploadImageToCloudinary(file: Express.Multer.File) {
+    return await this.cloudinaryService.uploadImage(file).catch(() => {
+      throw new HttpException('Invalid file type.', HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  async destroyImageInCloudinary(public_id: string): Promise<any> {
+    return await this.cloudinaryService.destroyImage(public_id);
   }
 }

@@ -7,10 +7,12 @@ export const UserSchema = new mongoose.Schema(
     firstname: { type: String, required: true },
     lastname: { type: String, required: true },
     avatar: {
-      type: String,
+      type: Object,
       required: true,
-      default:
-        'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-portrait-176256935.jpg',
+      default: {
+        public_id: 'imagedinhvanluan',
+        url: 'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-portrait-176256935.jpg',
+      },
     },
     refreshToken: { type: String },
   },

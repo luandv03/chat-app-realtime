@@ -19,6 +19,8 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   lastname: string;
+
+  avatar: object;
 }
 
 export class LoginUserDto {
