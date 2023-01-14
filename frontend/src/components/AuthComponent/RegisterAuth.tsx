@@ -11,6 +11,9 @@ import {
     FileInput,
 } from "@mantine/core";
 import { useForm, isNotEmpty, isEmail, hasLength } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons";
+import { authService } from "../../services/auth.service";
 
 export function RegisterAuth() {
     const form = useForm({
@@ -22,10 +25,12 @@ export function RegisterAuth() {
             lastname: "",
         },
 
+        validateInputOnBlur: true,
+
         validate: {
             email: isEmail("Invalid email"),
             password: hasLength(
-                { min: 8 },
+                { min: 8, max: 20 },
                 "Value must have 8 or more characters"
             ),
             confirmPassword: (value, values) =>
@@ -35,8 +40,43 @@ export function RegisterAuth() {
         },
     });
 
-    const handleValidate = () => {
-        form.validate();
+    const handleError = (errors: typeof form.errors): void => {
+        if (errors.name) {
+            showNotification({
+                message: "Please fill name field",
+                color: "red",
+            });
+        } else if (errors.email) {
+            showNotification({
+                message: "Please provide a valid email",
+                color: "red",
+            });
+        }
+    };
+
+    const handleSubmit = (values: typeof form.values): void => {
+        handleValidate(values);
+    };
+
+    const handleValidate = async (values: typeof form.values) => {
+        try {
+            await authService.register(values);
+            showNotification({
+                message: "You registered successfully!",
+                color: "blue",
+                icon: <IconCheck />,
+                autoClose: 3000,
+            });
+            form.reset();
+        } catch (error: any) {
+            showNotification({
+                title: "Register failure!",
+                message: error.response.data.message,
+                color: "red",
+                icon: <IconX />,
+                autoClose: 3000,
+            });
+        }
     };
 
     return (
@@ -52,50 +92,52 @@ export function RegisterAuth() {
             </Title>
             <Text color="dimmed" size="sm" align="center" mt={5}>
                 Do not have an account yet?{" "}
-                <Anchor<"a"> href="/login" size="sm">
+                <Anchor<"a"> href="/auth/login" size="sm">
                     Login account
                 </Anchor>
             </Text>
 
             <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-                <TextInput
-                    label="Email"
-                    placeholder="you@gmail.com"
-                    required
-                    {...form.getInputProps("email")}
-                />
-                <PasswordInput
-                    label="Password"
-                    placeholder="Your password"
-                    required
-                    mt="md"
-                    {...form.getInputProps("password")}
-                />
-                <PasswordInput
-                    label="Confirm password"
-                    placeholder="Your password"
-                    required
-                    mt="md"
-                    {...form.getInputProps("confirmPassword")}
-                />
-                <Group position="apart" mt="lg" spacing="xs">
+                <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
                     <TextInput
-                        label="First Name"
+                        label="Email"
+                        placeholder="you@gmail.com"
                         required
-                        size="xs"
-                        {...form.getInputProps("firstname")}
+                        {...form.getInputProps("email")}
                     />
-                    <TextInput
-                        label="Last Name"
+                    <PasswordInput
+                        label="Password"
+                        placeholder="Your password"
                         required
-                        size="xs"
-                        {...form.getInputProps("lastname")}
+                        mt="md"
+                        {...form.getInputProps("password")}
                     />
-                </Group>
-                <FileInput placeholder="Pick file" label="Your avatar" />
-                <Button fullWidth mt="xl" onClick={() => handleValidate()}>
-                    Register
-                </Button>
+                    <PasswordInput
+                        label="Confirm password"
+                        placeholder="Your password"
+                        required
+                        mt="md"
+                        {...form.getInputProps("confirmPassword")}
+                    />
+                    <Group position="apart" mt="lg" spacing="xs">
+                        <TextInput
+                            label="First Name"
+                            required
+                            size="xs"
+                            {...form.getInputProps("firstname")}
+                        />
+                        <TextInput
+                            label="Last Name"
+                            required
+                            size="xs"
+                            {...form.getInputProps("lastname")}
+                        />
+                    </Group>
+                    <FileInput placeholder="Pick file" label="Your avatar" />
+                    <Button fullWidth mt="xl" type="submit">
+                        Register
+                    </Button>
+                </form>
             </Paper>
         </Container>
     );
