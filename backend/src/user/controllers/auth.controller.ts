@@ -8,8 +8,9 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Res,
 } from '@nestjs/common';
-import { Express } from 'express';
+import { Express, Response } from 'express';
 import { CreateUserDto, LoginUserDto } from '../dto/user.dto';
 import { AuthService } from '../service/auth.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
@@ -28,8 +29,17 @@ export class AuthController {
   }
 
   @Post('/login')
-  async login(@Body() loginUserDto: LoginUserDto): Promise<any> {
-    return await this.authService.login(loginUserDto);
+  async login(
+    @Body() loginUserDto: LoginUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const data = await this.authService.login(loginUserDto);
+    const secretData = {
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+    };
+    res.cookie('auth-cookie', secretData, { httpOnly: true });
+    return data;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -49,7 +59,16 @@ export class AuthController {
   }
 
   @Post('/refresh_token')
-  async refresh(@Body('refreshToken') refreshToken: string): Promise<any> {
-    return await this.authService.refreshToken(refreshToken);
+  async refresh(
+    @Body('refreshToken') refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const data = await this.authService.refreshToken(refreshToken);
+    const secretData = {
+      accessToken: data.accessToken,
+      refreshToken,
+    };
+    res.cookie('auth-cookie', secretData, { httpOnly: true });
+    return data;
   }
 }

@@ -1,6 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
+import { Request } from 'express';
 import { AuthService } from '../service/auth.service';
 import { jwtConstrant } from '../constrant/jwt.constrant';
 
@@ -8,7 +9,15 @@ import { jwtConstrant } from '../constrant/jwt.constrant';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          const data = request?.cookies['auth-cookie'];
+          if (!data) {
+            return null;
+          }
+          return data.accessToken;
+        },
+      ]),
       secretOrKey: jwtConstrant.SECRET_KEY,
     });
   }
