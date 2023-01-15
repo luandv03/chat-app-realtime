@@ -9,10 +9,11 @@ import {
     Container,
     Group,
     Button,
+    Center,
 } from "@mantine/core";
 import { useForm, isEmail, hasLength } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons";
+import { IconCheck, IconX, IconAt, IconLock } from "@tabler/icons";
 import { authService } from "../../services/auth.service";
 
 export function LoginAuth() {
@@ -74,53 +75,60 @@ export function LoginAuth() {
     };
 
     return (
-        <Container size={420} my={40}>
-            <Title
-                align="center"
-                sx={(theme) => ({
-                    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-                    fontWeight: 900,
-                })}
-            >
-                Welcome to IChat!
-            </Title>
-            <Text color="dimmed" size="sm" align="center" mt={5}>
-                Do not have an account yet?{" "}
-                <Anchor<"a"> href="/auth/register" size="sm">
-                    Create account
-                </Anchor>
-            </Text>
+        <Center>
+            <Container size={420} my={40}>
+                <Title
+                    align="center"
+                    sx={(theme) => ({
+                        fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+                        fontWeight: 900,
+                    })}
+                >
+                    Welcome to IChat!
+                </Title>
+                <Text color="dimmed" size="sm" align="center" mt={5}>
+                    Do not have an account yet?{" "}
+                    <Anchor<"a"> href="/auth/register" size="sm">
+                        Create account
+                    </Anchor>
+                </Text>
 
-            <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-                <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
-                    <TextInput
-                        label="Email"
-                        placeholder="you@mantine.dev"
-                        required
-                        {...form.getInputProps("email")}
-                    />
-                    <PasswordInput
-                        label="Password"
-                        placeholder="Your password"
-                        required
-                        mt="md"
-                        {...form.getInputProps("password")}
-                    />
-                    <Group position="apart" mt="lg">
-                        <Checkbox label="Remember me" sx={{ lineHeight: 1 }} />
-                        <Anchor<"a">
-                            onClick={(event) => event.preventDefault()}
-                            href="#"
-                            size="sm"
-                        >
-                            Forgot password?
-                        </Anchor>
-                    </Group>
-                    <Button fullWidth mt="xl" type="submit">
-                        Sign in
-                    </Button>
-                </form>
-            </Paper>
-        </Container>
+                <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+                    <form onSubmit={form.onSubmit(handleSubmit, handleError)}>
+                        <TextInput
+                            label="Email"
+                            placeholder="you@mantine.dev"
+                            icon={<IconAt size={16} />}
+                            required
+                            {...form.getInputProps("email")}
+                        />
+                        <PasswordInput
+                            label="Password"
+                            placeholder="Your password"
+                            icon={<IconLock size={16} />}
+                            required
+                            mt="md"
+                            {...form.getInputProps("password")}
+                        />
+                        <Group position="apart" mt="lg">
+                            <Checkbox
+                                label="Remember me"
+                                sx={{ lineHeight: 1 }}
+                            />
+                            <Anchor<"a">
+                                onClick={(event) => event.preventDefault()}
+                                href="#"
+                                size="sm"
+                            >
+                                Forgot password?
+                            </Anchor>
+                        </Group>
+                        <Button fullWidth mt="xl" type="submit">
+                            Sign in
+                        </Button>
+                    </form>
+                </Paper>
+            </Container>
+        </Center>
     );
 }

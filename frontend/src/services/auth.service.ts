@@ -10,7 +10,7 @@ export class AuthService extends BaseService {
         return response;
     }
 
-    async register(registerPayload: IRegister) {
+    async register(registerPayload: IRegister | FormData) {
         const response = await this.httpClient.post(
             "/auth/register",
             registerPayload
