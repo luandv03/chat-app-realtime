@@ -1,5 +1,7 @@
-import React, { FC } from "react";
+import React, { FC, memo } from "react";
 
-export const ChatLayout: FC = () => {
+export const Chat: FC = () => {
     return <div>ChatLyout</div>;
 };
+
+export const ChatLayout = memo(Chat);

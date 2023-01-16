@@ -15,12 +15,15 @@ import {
 import { useForm, isEmail, hasLength } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { IconCheck, IconX, IconAt, IconLock } from "@tabler/icons";
-import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
 import { authService } from "../../services/auth.service";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export function LoginAuth() {
     const [loading, setLoading] = useState(false);
+
+    const { setUser } = useContext(AuthContext);
 
     const form = useForm({
         initialValues: {
@@ -71,7 +74,7 @@ export function LoginAuth() {
                 autoClose: 3000,
             });
             const response = await authService.getProfile();
-            console.log(response.data);
+            setUser(response.data);
             navigate("/chat");
             form.reset();
         } catch (error: any) {
