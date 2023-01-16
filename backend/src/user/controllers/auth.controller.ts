@@ -10,7 +10,7 @@ import {
   UploadedFile,
   Res,
 } from '@nestjs/common';
-import { Express, Response } from 'express';
+import { Express, Response, Request } from 'express';
 import { CreateUserDto, LoginUserDto } from '../dto/user.dto';
 import { AuthService } from '../service/auth.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
@@ -60,15 +60,22 @@ export class AuthController {
 
   @Post('/refresh_token')
   async refresh(
-    @Body('refreshToken') refreshToken: string,
+    @Req() request: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    const data = await this.authService.refreshToken(refreshToken);
+    // Get refresh from cookies
+    const authCookie = request?.cookies['auth-cookie'];
+
+    //Refresh token to get access token
+    const data = await this.authService.refreshToken(authCookie.refreshToken);
+
+    //Update accessToken to cookies
     const secretData = {
       accessToken: data.accessToken,
-      refreshToken,
+      refreshToken: authCookie.refreshToken,
     };
     res.cookie('auth-cookie', secretData, { httpOnly: true });
+
     return data;
   }
 }
