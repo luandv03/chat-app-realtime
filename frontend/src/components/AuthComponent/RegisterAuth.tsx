@@ -56,6 +56,7 @@ export function RegisterAuth() {
                 message: "Please provide a valid email",
                 color: "red",
             });
+            setLoading(false);
         }
     };
 

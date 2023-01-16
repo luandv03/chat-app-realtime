@@ -13,13 +13,12 @@ jwtInterceptor.interceptors.response.use(
     async (error) => {
         if (error.response.status === 401) {
             await axios
-                .get("/refresh_token", {
+                .get("http://localhost:4000/auth/refresh_token", {
                     withCredentials: true,
                 })
                 .catch((err) => {
                     return Promise.reject(err);
                 });
-            console.log(error.config);
             return axios(error.config);
         } else {
             return Promise.reject(error);

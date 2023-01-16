@@ -19,7 +19,7 @@ export class AuthService extends BaseService {
     }
 
     async getProfile() {
-        const response = await this.httpClient.get("/auth/profile");
+        const response = await this.jwtClient.get("/auth/profile");
         return response;
     }
 
