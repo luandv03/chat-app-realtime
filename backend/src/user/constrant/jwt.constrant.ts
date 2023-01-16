@@ -1,6 +1,6 @@
 export const jwtConstrant = {
   SECRET_KEY: 'jsonwebtokenissecret',
-  EXPIRES_IN: '60s',
+  EXPIRES_IN: '1h',
   SECRET_KEY_REFRESH: 'refreshtokenisreal',
-  EXPIRES_IN_REFRESH: '1h',
+  EXPIRES_IN_REFRESH: '7d',
 };

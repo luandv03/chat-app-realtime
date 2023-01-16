@@ -11,6 +11,7 @@ interface IHttpConfig extends IHttpRequestConfig {
 }
 
 interface IHttpCustomConfigs {
+    withCredentials?: boolean; // Luan add to service for cookies
     baseUrl: string;
     authentication: {
         token: string;
@@ -84,6 +85,7 @@ export class Http {
 
     setCustomConfigs(configs: Partial<IHttpCustomConfigs>) {
         if (configs.baseUrl) {
+            this.instance.defaults.withCredentials = configs.withCredentials; // Luan add to cookies
             this.instance.defaults.baseURL = configs.baseUrl;
         }
 

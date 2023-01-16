@@ -18,6 +18,11 @@ export class AuthService extends BaseService {
         return response;
     }
 
+    async getProfile() {
+        const response = await this.httpClient.get("/auth/profile");
+        return response;
+    }
+
     async verifyToken({ token }: { token: string }) {
         const response = await this.httpClient.post(
             "/auth/verify-token",

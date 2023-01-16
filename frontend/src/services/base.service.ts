@@ -8,6 +8,7 @@ export class BaseService {
         const httpClient = new Http();
 
         httpClient.setCustomConfigs({
+            withCredentials: true, // Luan add to cookies
             baseUrl: API_URL_BASE,
         });
 

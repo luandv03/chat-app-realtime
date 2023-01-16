@@ -54,14 +54,15 @@ export function LoginAuth() {
 
     const handleValidate = async (values: typeof form.values) => {
         try {
-            const res = await authService.login(values);
-            console.log(res);
+            await authService.login(values);
             showNotification({
                 message: "You login successfully!",
                 color: "yellow",
                 icon: <IconCheck />,
                 autoClose: 3000,
             });
+            const response = await authService.getProfile();
+            console.log(response.data);
             form.reset();
         } catch (error: any) {
             showNotification({

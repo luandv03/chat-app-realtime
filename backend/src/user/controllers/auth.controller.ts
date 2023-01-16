@@ -44,8 +44,12 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/logout')
-  async logout(@Req() req: any): Promise<any> {
+  async logout(
+    @Req() req: any,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
     await this.authService.logout(req.user);
+    res.cookie('auth-cookie', '', { httpOnly: true });
 
     return {
       statusCode: 200,

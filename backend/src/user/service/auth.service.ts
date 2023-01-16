@@ -54,20 +54,25 @@ export class AuthService {
   }
 
   async validate(email: string): Promise<any> {
-    const user = await this.userService.findByEmail(email, '-password');
+    const user = await this.userService.findByEmail(
+      email,
+      '-password -refreshToken',
+    );
 
     if (!user) {
       throw new HttpException('Invalid token!', HttpStatus.UNAUTHORIZED);
     }
 
-    // giải quyết trường hợp: khi logout mà refresh token bị xóa nhưng access token vẫn còn hạn
+    // giải quyết trường hợp: khi logout mà refresh token bị null nhưng access token vẫn còn hạn
     // nên vẫn vào được các router cần access token nên ta phải check refresh token ở đoạn này nữa
-    if (!user.refreshToken) {
-      throw new HttpException(
-        'Invalid refresh token!',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
+
+    //Đây là giải pháp khi sử dụng Bearer Token (not save token in cookies)
+    // if (user?.refreshToken == null) {
+    //   throw new HttpException(
+    //     'Invalid refresh token!',
+    //     HttpStatus.UNAUTHORIZED,
+    //   );
+    // }
 
     return user;
   }
