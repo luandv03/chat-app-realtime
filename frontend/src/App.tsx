@@ -15,6 +15,8 @@ import { AuthContext } from "./contexts/AuthContext";
 function App() {
     const { loading } = useContext(AuthContext);
 
+    console.log("App rerender...");
+
     return (
         <MantineProvider withGlobalStyles withNormalizeCSS>
             <NotificationsProvider>
