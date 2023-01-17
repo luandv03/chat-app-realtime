@@ -30,8 +30,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    console.log("AuthContext rerender...");
-
     useEffect(() => {
         const handleGetMe = async () => {
             try {
