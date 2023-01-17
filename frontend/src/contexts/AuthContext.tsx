@@ -38,13 +38,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setUser(response.data);
                 setLoading(false);
                 navigate(
-                    location.pathname === "/auth/login" ||
-                        location.pathname === "/auth/register"
+                    location.pathname.startsWith("/auth")
                         ? "/chat"
                         : location.pathname
                 );
             } catch (err: any) {
-                navigate("auth/login");
+                navigate(
+                    location.pathname.startsWith("/auth")
+                        ? location.pathname
+                        : "/auth/login"
+                );
                 setLoading(false);
             }
         };

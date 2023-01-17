@@ -141,7 +141,7 @@ export const HeaderChat = () => {
                             >
                                 <Group spacing={7}>
                                     <Avatar
-                                        src={user?.avatar}
+                                        src={user?.avatar.url}
                                         alt={
                                             user?.firstname +
                                             " " +
