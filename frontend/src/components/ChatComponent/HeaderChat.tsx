@@ -7,9 +7,17 @@ import {
     Text,
     Menu,
     UnstyledButton,
+    Skeleton,
+    ActionIcon,
 } from "@mantine/core";
-import { IconChevronDown, IconLogout, IconUserCircle } from "@tabler/icons";
+import {
+    IconChevronDown,
+    IconLogout,
+    IconUserCircle,
+    IconBell,
+} from "@tabler/icons";
 import { AuthContext } from "../../contexts/AuthContext";
+import { ActionTheme } from "../Theme";
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -54,8 +62,10 @@ const useStyles = createStyles((theme) => ({
 export const HeaderChat = () => {
     const [userMenuOpened, setUserMenuOpened] = useState(false);
     const { cx, theme, classes } = useStyles();
-    const { user } = useContext(AuthContext);
-    return (
+    const { user, loading } = useContext(AuthContext);
+    return loading ? (
+        <Skeleton height={60} width="100%" />
+    ) : (
         <Header
             height={60}
             className={classes.header}
@@ -68,49 +78,65 @@ export const HeaderChat = () => {
                 <Text size={30} sx={{ cursor: "pointer" }} color={theme.white}>
                     IChat
                 </Text>
-                <Menu
-                    width={260}
-                    position="bottom-end"
-                    transition="pop-top-right"
-                    onClose={() => setUserMenuOpened(false)}
-                    onOpen={() => setUserMenuOpened(true)}
-                >
-                    <Menu.Target>
-                        <UnstyledButton
-                            className={cx(classes.user, {
-                                [classes.userActive]: userMenuOpened,
-                            })}
-                        >
-                            <Group spacing={7}>
-                                <Avatar
-                                    src={user?.avatar}
-                                    alt={user?.firstname + " " + user?.lastname}
-                                    radius="xl"
-                                    size={20}
-                                />
-                                <Text
-                                    weight={500}
-                                    size="sm"
-                                    sx={{ lineHeight: 1, color: theme.white }}
-                                    mr={3}
-                                >
-                                    {user?.firstname + " " + user?.lastname}
-                                </Text>
-                                <IconChevronDown size={12} stroke={1.5} />
-                            </Group>
-                        </UnstyledButton>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                        <Menu.Item
-                            icon={<IconUserCircle size={14} stroke={1.5} />}
-                        >
-                            My profile
-                        </Menu.Item>
-                        <Menu.Item icon={<IconLogout size={14} stroke={1.5} />}>
-                            Logout
-                        </Menu.Item>
-                    </Menu.Dropdown>
-                </Menu>
+
+                <Group spacing={1}>
+                    <ActionIcon size="xl" variant="transparent">
+                        <IconBell color="white" size={25} />
+                    </ActionIcon>
+                    <Menu
+                        width={260}
+                        position="bottom-end"
+                        transition="pop-top-right"
+                        onClose={() => setUserMenuOpened(false)}
+                        onOpen={() => setUserMenuOpened(true)}
+                    >
+                        <Menu.Target>
+                            <UnstyledButton
+                                className={cx(classes.user, {
+                                    [classes.userActive]: userMenuOpened,
+                                })}
+                            >
+                                <Group spacing={7}>
+                                    <Avatar
+                                        src={user?.avatar}
+                                        alt={
+                                            user?.firstname +
+                                            " " +
+                                            user?.lastname
+                                        }
+                                        radius="xl"
+                                        size={20}
+                                    />
+                                    <Text
+                                        weight={500}
+                                        size="sm"
+                                        sx={{
+                                            lineHeight: 1,
+                                            color: theme.white,
+                                        }}
+                                        mr={3}
+                                    >
+                                        {user?.firstname + " " + user?.lastname}
+                                    </Text>
+                                    <IconChevronDown size={12} stroke={1.5} />
+                                </Group>
+                            </UnstyledButton>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                            <Menu.Item
+                                icon={<IconUserCircle size={14} stroke={1.5} />}
+                            >
+                                My profile
+                            </Menu.Item>
+                            <Menu.Item
+                                icon={<IconLogout size={14} stroke={1.5} />}
+                            >
+                                Logout
+                            </Menu.Item>
+                        </Menu.Dropdown>
+                    </Menu>
+                    <ActionTheme />
+                </Group>
             </Group>
         </Header>
     );

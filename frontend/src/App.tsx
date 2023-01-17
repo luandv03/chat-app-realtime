@@ -1,6 +1,6 @@
 import React, { useContext, memo } from "react";
 import { Routes, Route } from "react-router-dom";
-import { MantineProvider } from "@mantine/core";
+import { MantineProvider, useMantineColorScheme } from "@mantine/core";
 import {
     AUTH_ROOT_ROUTE,
     AUTH_LOGIN_ROUTE,
@@ -14,11 +14,14 @@ import { AuthContext } from "./contexts/AuthContext";
 
 function App() {
     const { loading } = useContext(AuthContext);
-
-    console.log("App rerender...");
+    const { colorScheme } = useMantineColorScheme();
 
     return (
-        <MantineProvider withGlobalStyles withNormalizeCSS>
+        <MantineProvider
+            theme={{ colorScheme: colorScheme }}
+            withGlobalStyles
+            withNormalizeCSS
+        >
             <NotificationsProvider>
                 {loading ? (
                     <div>Loading...</div>
