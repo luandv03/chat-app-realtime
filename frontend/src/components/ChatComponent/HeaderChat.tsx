@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router";
 import {
     Avatar,
     Header,
@@ -18,6 +19,7 @@ import {
 } from "@tabler/icons";
 import { AuthContext } from "../../contexts/AuthContext";
 import { ActionTheme } from "../Theme";
+import { authService } from "../../services/auth.service";
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -63,6 +65,13 @@ export const HeaderChat = () => {
     const [userMenuOpened, setUserMenuOpened] = useState(false);
     const { cx, theme, classes } = useStyles();
     const { user, loading } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await authService.logout();
+        setTimeout(() => navigate("/auth/login"), 1000);
+    };
+
     return loading ? (
         <Skeleton height={60} width="100%" />
     ) : (
@@ -164,6 +173,7 @@ export const HeaderChat = () => {
                             </Menu.Item>
                             <Menu.Item
                                 icon={<IconLogout size={14} stroke={1.5} />}
+                                onClick={handleLogout}
                             >
                                 Logout
                             </Menu.Item>
