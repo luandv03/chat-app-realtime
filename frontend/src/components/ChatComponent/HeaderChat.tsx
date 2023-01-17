@@ -78,10 +78,11 @@ export const HeaderChat = () => {
         <Header
             height={60}
             className={classes.header}
-            mb={120}
             pt={0}
             pl={20}
             pr={20}
+            mb={0}
+            sx={{ width: "100%" }}
         >
             <Group position="apart" sx={{ height: "100%" }}>
                 <Group sx={{ height: "100%" }} spacing={3}>

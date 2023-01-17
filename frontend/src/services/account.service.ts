@@ -1,6 +1,14 @@
 import { BaseService } from "./base.service";
 
 export class AccountsService extends BaseService {
+    async searchUsers(searchValue: string) {
+        const response = await this.jwtClient.get(
+            "/user/search?value=" + searchValue
+        );
+
+        return response;
+    }
+
     async getAccounts() {
         const response = await this.httpClient.get("/accounts?limit=50", {
             isPrivateAPI: true,
