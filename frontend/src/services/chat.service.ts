@@ -1,7 +1,7 @@
 import { BaseService } from "./base.service";
 
 export class ChatService extends BaseService {
-    async acessChat(userId: string) {
+    async accessChat(userId: string) {
         const response = await this.jwtClient.post("/chat", { userId });
         return response;
     }

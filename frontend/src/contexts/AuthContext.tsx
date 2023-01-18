@@ -15,6 +15,8 @@ interface IContext {
     setUser: Dispatch<SetStateAction<IUser | null>>;
     loading: boolean;
     setLoading: Dispatch<SetStateAction<boolean>>;
+    isSelected: any;
+    setIsSelected: Dispatch<SetStateAction<any>>;
 }
 
 export const AuthContext = createContext<IContext>({
@@ -22,11 +24,14 @@ export const AuthContext = createContext<IContext>({
     setUser: () => {},
     loading: false,
     setLoading: () => {},
+    isSelected: null,
+    setIsSelected: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<IUser | null>(null);
     const [loading, setLoading] = useState(false);
+    const [isSelected, setIsSelected] = useState<any>({});
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -58,7 +63,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [navigate]);
 
     return (
-        <AuthContext.Provider value={{ user, setUser, loading, setLoading }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                setUser,
+                loading,
+                setLoading,
+                isSelected,
+                setIsSelected,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

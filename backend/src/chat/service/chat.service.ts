@@ -79,12 +79,11 @@ export class ChatService {
         ],
       );
 
-      chatUser.sort({ updatedAt: -1 });
-
       chatUser = await this.userRepository.populate(chatUser, {
         path: 'latestMessage.sender',
-        select: 'name pic email',
+        select: 'name avatar email firstname lastname',
       });
+
       return chatUser;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);

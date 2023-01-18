@@ -2,9 +2,21 @@ import React from "react";
 import { Avatar, Button, Group, Text, Stack } from "@mantine/core";
 import { IUser } from "../../interfaces/user/user.interface";
 
-export const UserItem = ({ user }: { user: IUser }) => {
+export const UserItem = ({
+    user,
+    executeAccessChat,
+}: {
+    user: IUser;
+    executeAccessChat: (userId: string) => void;
+}) => {
     return (
-        <Button variant="default" m={0} p={0} fullWidth>
+        <Button
+            variant="default"
+            m={0}
+            p={0}
+            fullWidth
+            onClick={() => executeAccessChat(user._id)}
+        >
             <Group position="left" spacing={10} sx={{ width: "270px" }}>
                 <Avatar
                     variant="outline"

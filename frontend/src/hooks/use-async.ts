@@ -17,7 +17,7 @@ export function useAsync<IPayload = unknown>({
     const [status, setStatus] = useState<Status>("idle");
 
     const execute = useCallback(
-        (payload: IPayload) => {
+        (payload?: IPayload) => {
             setStatus("pending");
             const timeStart = Date.now();
 

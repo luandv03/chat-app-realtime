@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Navbar, Header, Input, ActionIcon, Loader } from "@mantine/core";
 import { IconSearch, IconX } from "@tabler/icons";
 import { useDebouncedValue } from "@mantine/hooks";
 import { accountsService } from "../../services/account.service";
+import { chatService } from "../../services/chat.service";
 import { UserList } from "../UserComponent";
 import { IUser } from "../../interfaces/user/user.interface";
 import { useAsync } from "../../hooks/use-async";
+import { ChatList } from "./ChatList";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export const NavbarChat = () => {
     const [search, setSearch] = useState("");
     const [users, setUsers] = useState<IUser[]>([]);
     const [debounced] = useDebouncedValue(search, 500);
+    const [listChats, setListChats] = useState<any[]>([]);
+
+    const { setIsSelected } = useContext(AuthContext);
 
     const [executeSearch, statusExecuteSearch] = useAsync<string>({
         delay: 500,
@@ -22,13 +28,41 @@ export const NavbarChat = () => {
         },
     });
 
+    const [executeFetchChat, statusFecthChat] = useAsync({
+        delay: 500,
+        asyncFunction: () => {
+            return chatService.fetchChat();
+        },
+        onResolve: (result) => {
+            const { data } = result as { data: any[] };
+            setListChats(data);
+        },
+    });
+
+    const [executeAccessChat, statusExecuteAccessChat] = useAsync<string>({
+        delay: 500,
+        asyncFunction: (payload) => {
+            return chatService.accessChat(payload as string);
+        },
+        onResolve: (result) => {
+            const { data } = result as { data: any };
+            console.log(data);
+            setIsSelected(data);
+        },
+        onReject: (error) => {
+            console.log(error);
+        },
+    });
+
     useEffect(() => {
         if (!debounced.trim()) return;
         executeSearch(debounced.trim());
     }, [debounced]);
 
+    useEffect(() => executeFetchChat(), []);
+
     return (
-        <Navbar width={{ base: 300 }} p="xs">
+        <Navbar width={{ base: 400 }} p="xs">
             <Header height={50}>
                 <Input
                     icon={<IconSearch size={18} />}
@@ -57,7 +91,10 @@ export const NavbarChat = () => {
                     }}
                 >
                     {users.length > 0 ? (
-                        <UserList users={users} />
+                        <UserList
+                            users={users}
+                            executeAccessChat={executeAccessChat}
+                        />
                     ) : (
                         <div
                             style={{
@@ -71,6 +108,8 @@ export const NavbarChat = () => {
                     )}
                 </div>
             )}
+            {statusFecthChat === "pending" && <Loader size={20} />}
+            {listChats.length > 0 && <ChatList chats={listChats} />}
         </Navbar>
     );
 };
