@@ -4,14 +4,8 @@ import { IUser } from "../../interfaces/user/user.interface";
 
 export const UserItem = ({ user }: { user: IUser }) => {
     return (
-        <Button
-            variant="default"
-            m={0}
-            p={0}
-            sx={{ textAlign: "left" }}
-            fullWidth
-        >
-            <Group position="left" spacing={4}>
+        <Button variant="default" m={0} p={0} fullWidth>
+            <Group position="left" spacing={10} sx={{ width: "270px" }}>
                 <Avatar
                     variant="outline"
                     src={user.avatar.url}

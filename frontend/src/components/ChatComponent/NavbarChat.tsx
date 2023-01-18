@@ -5,23 +5,26 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { accountsService } from "../../services/account.service";
 import { UserList } from "../UserComponent";
 import { IUser } from "../../interfaces/user/user.interface";
+import { useAsync } from "../../hooks/use-async";
 
 export const NavbarChat = () => {
     const [search, setSearch] = useState("");
-    const [loading, setLoading] = useState(false);
     const [users, setUsers] = useState<IUser[]>([]);
     const [debounced] = useDebouncedValue(search, 500);
 
-    const handleSearch = async () => {
-        if (!debounced) return;
-        setLoading(true);
-        const response = await accountsService.searchUsers(debounced);
-        setTimeout(() => setLoading(false), 500);
-        setUsers(response.data);
-    };
+    const [executeSearch, statusExecuteSearch] = useAsync<string>({
+        delay: 500,
+        asyncFunction: (payload) =>
+            accountsService.searchUsers(payload as string),
+        onResolve: (result) => {
+            const { data } = result as { data: IUser[] };
+            setUsers(data);
+        },
+    });
 
     useEffect(() => {
-        handleSearch();
+        if (!debounced.trim()) return;
+        executeSearch(debounced.trim());
     }, [debounced]);
 
     return (
@@ -34,8 +37,13 @@ export const NavbarChat = () => {
                     onChange={(e) => setSearch(e.target.value)}
                     rightSection={
                         <ActionIcon onClick={() => setSearch("")}>
-                            {debounced && !loading && <IconX size={18} />}
-                            {loading && <Loader color="gray" size={18} />}
+                            {debounced &&
+                                !(statusExecuteSearch === "pending") && (
+                                    <IconX size={18} />
+                                )}
+                            {statusExecuteSearch === "pending" && (
+                                <Loader color="gray" size={18} />
+                            )}
                         </ActionIcon>
                     }
                 />
@@ -51,7 +59,15 @@ export const NavbarChat = () => {
                     {users.length > 0 ? (
                         <UserList users={users} />
                     ) : (
-                        <div style={{ textAlign: "center" }}>No result</div>
+                        <div
+                            style={{
+                                textAlign: "center",
+                                height: "30px",
+                                padding: "5px",
+                            }}
+                        >
+                            No result
+                        </div>
                     )}
                 </div>
             )}

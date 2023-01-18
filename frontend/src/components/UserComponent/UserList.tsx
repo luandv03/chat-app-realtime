@@ -6,8 +6,8 @@ import { Stack } from "@mantine/core";
 export const UserList = ({ users }: { users: IUser[] }) => {
     return (
         <Stack spacing={1}>
-            {users.map((item) => (
-                <UserItem user={item} />
+            {users.map((item, index) => (
+                <UserItem user={item} key={index} />
             ))}
         </Stack>
     );
