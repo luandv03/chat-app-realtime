@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Navbar, Header, Input, ActionIcon, Loader } from "@mantine/core";
+import {
+    Navbar,
+    Header,
+    Input,
+    ActionIcon,
+    Loader,
+    useMantineColorScheme,
+    Center,
+} from "@mantine/core";
 import { IconSearch, IconX } from "@tabler/icons";
 import { useDebouncedValue } from "@mantine/hooks";
 import { accountsService } from "../../services/account.service";
@@ -15,6 +23,7 @@ export const NavbarChat = () => {
     const [users, setUsers] = useState<IUser[]>([]);
     const [debounced] = useDebouncedValue(search, 500);
     const [listChats, setListChats] = useState<any[]>([]);
+    const { colorScheme } = useMantineColorScheme();
 
     const { setIsSelected } = useContext(AuthContext);
 
@@ -35,6 +44,7 @@ export const NavbarChat = () => {
         },
         onResolve: (result) => {
             const { data } = result as { data: any[] };
+            console.log(data);
             setListChats(data);
         },
     });
@@ -46,7 +56,6 @@ export const NavbarChat = () => {
         },
         onResolve: (result) => {
             const { data } = result as { data: any };
-            console.log(data);
             setIsSelected(data);
         },
         onReject: (error) => {
@@ -62,7 +71,7 @@ export const NavbarChat = () => {
     useEffect(() => executeFetchChat(), []);
 
     return (
-        <Navbar width={{ base: 400 }} p="xs">
+        <Navbar width={{ base: 400 }} p="xs" sx={{ position: "relative" }}>
             <Header height={50}>
                 <Input
                     icon={<IconSearch size={18} />}
@@ -85,16 +94,27 @@ export const NavbarChat = () => {
             {debounced && (
                 <div
                     style={{
-                        width: "100%",
-                        border: "1px solid gray",
+                        // width: "90%",
+                        boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
                         borderRadius: "4px",
+                        position: "absolute",
+                        top: "60px",
+                        left: "10px",
+                        right: "10px",
+                        zIndex: 1,
+                        overflow: "hidden",
+                        background:
+                            colorScheme === "light" ? "white" : "#25262b",
                     }}
                 >
                     {users.length > 0 ? (
-                        <UserList
-                            users={users}
-                            executeAccessChat={executeAccessChat}
-                        />
+                        <>
+                            <Center>Results</Center>
+                            <UserList
+                                users={users}
+                                executeAccessChat={executeAccessChat}
+                            />
+                        </>
                     ) : (
                         <div
                             style={{

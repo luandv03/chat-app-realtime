@@ -15,7 +15,9 @@ export const UserItem = ({
             m={0}
             p={0}
             fullWidth
-            onClick={() => executeAccessChat(user._id)}
+            // onClick={() => executeAccessChat(user._id)}
+            radius={0}
+            sx={{ border: "none", outline: "none", height: "50px" }}
         >
             <Group position="left" spacing={10} sx={{ width: "270px" }}>
                 <Avatar

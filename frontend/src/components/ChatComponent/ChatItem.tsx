@@ -19,7 +19,7 @@ export const ChatItem = ({ chat }: { chat: any }) => {
                     variant="outline"
                     src={
                         !chat.isGroupChat &&
-                        chat.latestMessage.sender.avatar.url
+                        chat?.latestMessage.sender.avatar.url
                     }
                     radius="xl"
                     size="md"

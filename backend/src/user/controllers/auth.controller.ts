@@ -49,11 +49,11 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     await this.authService.logout(req.user);
-    const secretData = {
-      accessToken: null,
-      refreshToken: null,
-    };
-    res.cookie('auth-cookie', secretData, { httpOnly: true });
+    // const secretData = {
+    //   accessToken: null,
+    //   refreshToken: null,
+    // };
+    res.cookie('auth-cookie', '', { httpOnly: true });
 
     return {
       statusCode: 200,
