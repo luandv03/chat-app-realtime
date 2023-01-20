@@ -69,6 +69,7 @@ export class ChatService {
       let chatUser: any = await this.chatRepository.getByCondition(
         {
           users: { $elemMatch: { $eq: user._id } },
+          latestMessage: { $exists: true },
         },
         null,
         null,

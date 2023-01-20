@@ -15,8 +15,8 @@ interface IContext {
     setUser: Dispatch<SetStateAction<IUser | null>>;
     loading: boolean;
     setLoading: Dispatch<SetStateAction<boolean>>;
-    isSelected: any;
-    setIsSelected: Dispatch<SetStateAction<any>>;
+    selectedChat: any;
+    setSelectedChat: Dispatch<SetStateAction<any>>;
 }
 
 export const AuthContext = createContext<IContext>({
@@ -24,14 +24,14 @@ export const AuthContext = createContext<IContext>({
     setUser: () => {},
     loading: false,
     setLoading: () => {},
-    isSelected: null,
-    setIsSelected: () => {},
+    selectedChat: null,
+    setSelectedChat: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<IUser | null>(null);
     const [loading, setLoading] = useState(false);
-    const [isSelected, setIsSelected] = useState<any>({});
+    const [selectedChat, setSelectedChat] = useState<any>({});
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -69,8 +69,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setUser,
                 loading,
                 setLoading,
-                isSelected,
-                setIsSelected,
+                selectedChat,
+                setSelectedChat,
             }}
         >
             {children}

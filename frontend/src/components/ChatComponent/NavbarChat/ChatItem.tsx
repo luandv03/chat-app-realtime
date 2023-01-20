@@ -1,8 +1,14 @@
 import React, { useContext } from "react";
 import { Button, Group, Avatar, Stack, Text } from "@mantine/core";
-import { AuthContext } from "../../contexts/AuthContext";
+import { AuthContext } from "../../../contexts/AuthContext";
 
-export const ChatItem = ({ chat }: { chat: any }) => {
+export const ChatItem = ({
+    chat,
+    handleSelectedChat,
+}: {
+    chat: any;
+    handleSelectedChat: (userId: string) => void;
+}) => {
     const { user } = useContext(AuthContext);
 
     const handleFormatDate = (date: any): string => {
@@ -13,13 +19,20 @@ export const ChatItem = ({ chat }: { chat: any }) => {
     };
 
     return (
-        <Button variant="default" m={0} p={0} fullWidth sx={{ height: "50px" }}>
+        <Button
+            variant="default"
+            m={0}
+            p={0}
+            fullWidth
+            sx={{ height: "50px" }}
+            onClick={() => handleSelectedChat(chat._id)}
+        >
             <Group position="left" spacing={10} sx={{ width: "270px" }}>
                 <Avatar
                     variant="outline"
                     src={
                         !chat.isGroupChat &&
-                        chat?.latestMessage.sender.avatar.url
+                        chat.latestMessage.sender.avatar.url
                     }
                     radius="xl"
                     size="md"

@@ -1,6 +1,6 @@
 import React from "react";
-import { HeaderChat } from "./HeaderChat";
-import { BodyChat } from "./BodyChat";
+import { HeaderChat } from "./";
+import { BodyChat } from "./";
 
 export const MainChat = () => {
     return (

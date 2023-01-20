@@ -1,6 +1,6 @@
 import React from "react";
 import { Group } from "@mantine/core";
-import { NavbarChat } from "./";
+import { NavbarChat } from "../NavbarChat";
 import { ContentChat } from "./";
 
 export const BodyChat = () => {

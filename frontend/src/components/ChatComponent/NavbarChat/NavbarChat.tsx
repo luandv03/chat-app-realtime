@@ -10,13 +10,13 @@ import {
 } from "@mantine/core";
 import { IconSearch, IconX } from "@tabler/icons";
 import { useDebouncedValue } from "@mantine/hooks";
-import { accountsService } from "../../services/account.service";
-import { chatService } from "../../services/chat.service";
-import { UserList } from "../UserComponent";
-import { IUser } from "../../interfaces/user/user.interface";
-import { useAsync } from "../../hooks/use-async";
+import { accountsService } from "../../../services/account.service";
+import { chatService } from "../../../services/chat.service";
+import { UserList } from "../../UserComponent";
+import { IUser } from "../../../interfaces/user/user.interface";
+import { useAsync } from "../../../hooks/use-async";
 import { ChatList } from "./ChatList";
-import { AuthContext } from "../../contexts/AuthContext";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 export const NavbarChat = () => {
     const [search, setSearch] = useState("");
@@ -25,7 +25,7 @@ export const NavbarChat = () => {
     const [listChats, setListChats] = useState<any[]>([]);
     const { colorScheme } = useMantineColorScheme();
 
-    const { setIsSelected } = useContext(AuthContext);
+    const { setSelectedChat } = useContext(AuthContext);
 
     const [executeSearch, statusExecuteSearch] = useAsync<string>({
         delay: 500,
@@ -44,19 +44,18 @@ export const NavbarChat = () => {
         },
         onResolve: (result) => {
             const { data } = result as { data: any[] };
-            console.log(data);
             setListChats(data);
         },
     });
 
-    const [executeAccessChat, statusExecuteAccessChat] = useAsync<string>({
+    const [executeAccessChat] = useAsync<string>({
         delay: 500,
         asyncFunction: (payload) => {
             return chatService.accessChat(payload as string);
         },
         onResolve: (result) => {
             const { data } = result as { data: any };
-            setIsSelected(data);
+            setSelectedChat(data);
         },
         onReject: (error) => {
             console.log(error);
@@ -68,7 +67,9 @@ export const NavbarChat = () => {
         executeSearch(debounced.trim());
     }, [debounced]);
 
-    useEffect(() => executeFetchChat(), []);
+    useEffect(() => {
+        executeFetchChat();
+    }, []);
 
     return (
         <Navbar width={{ base: 400 }} p="xs" sx={{ position: "relative" }}>
@@ -94,7 +95,6 @@ export const NavbarChat = () => {
             {debounced && (
                 <div
                     style={{
-                        // width: "90%",
                         boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
                         borderRadius: "4px",
                         position: "absolute",
@@ -129,7 +129,12 @@ export const NavbarChat = () => {
                 </div>
             )}
             {statusFecthChat === "pending" && <Loader size={20} />}
-            {listChats.length > 0 && <ChatList chats={listChats} />}
+            {listChats.length > 0 && (
+                <ChatList
+                    chats={listChats}
+                    handleSelectedChat={setSelectedChat}
+                />
+            )}
         </Navbar>
     );
 };

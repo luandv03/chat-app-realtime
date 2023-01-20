@@ -17,9 +17,9 @@ import {
     IconUserCircle,
     IconBell,
 } from "@tabler/icons";
-import { AuthContext } from "../../contexts/AuthContext";
-import { ActionTheme } from "../Theme";
-import { authService } from "../../services/auth.service";
+import { AuthContext } from "../../../contexts/AuthContext";
+import { ActionTheme } from "../../Theme";
+import { authService } from "../../../services/auth.service";
 
 const useStyles = createStyles((theme) => ({
     header: {
