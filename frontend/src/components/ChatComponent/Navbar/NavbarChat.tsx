@@ -72,7 +72,12 @@ export const NavbarChat = () => {
     }, []);
 
     return (
-        <Navbar width={{ base: 400 }} p="xs" sx={{ position: "relative" }}>
+        <Navbar
+            width={{ base: 400 }}
+            pl="xs"
+            pr="xs"
+            sx={{ position: "relative", top: "0" }}
+        >
             <Header height={50}>
                 <Input
                     icon={<IconSearch size={18} />}

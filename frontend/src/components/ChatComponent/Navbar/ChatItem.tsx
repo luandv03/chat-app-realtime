@@ -25,7 +25,7 @@ export const ChatItem = ({
             p={0}
             fullWidth
             sx={{ height: "50px" }}
-            onClick={() => handleSelectedChat(chat._id)}
+            onClick={() => handleSelectedChat(chat)}
         >
             <Group position="left" spacing={10} sx={{ width: "270px" }}>
                 <Avatar

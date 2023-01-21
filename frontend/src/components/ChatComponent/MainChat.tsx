@@ -1,10 +1,10 @@
 import React from "react";
-import { HeaderChat } from "./";
-import { BodyChat } from "./";
+import { HeaderChat } from "./Header/HeaderChat";
+import { BodyChat } from "./Body";
 
 export const MainChat = () => {
     return (
-        <div>
+        <div style={{ height: "100vh" }}>
             <HeaderChat />
             <BodyChat />
         </div>
