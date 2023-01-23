@@ -13,14 +13,17 @@ import {
     ScrollArea,
 } from "@mantine/core";
 import { IconMoodSmile, IconSend, IconMicrophone } from "@tabler/icons";
+import io from "socket.io-client";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { IUser } from "../../../interfaces/user/user.interface";
 import { useAsync } from "../../../hooks/use-async";
 import { messageService } from "../../../services/message.service";
+import { SOCKET_URL_BASE } from "../../../configs/routes.config";
+var socket: any, selectedChatCompare: any;
 
 export const ContentChat = () => {
     const [message, setMessage] = useState("");
-    const [content, setContent] = useState([]);
+    const [chatMessage, setChatMessage] = useState<any>([]);
     const { colorScheme } = useMantineColorScheme();
     const { selectedChat, user } = useContext(AuthContext);
 
@@ -39,14 +42,67 @@ export const ContentChat = () => {
         },
         onResolve(result) {
             const { data } = result as { data: any };
-            setContent(data);
+            setChatMessage(data);
+            socket.emit("join chat", selectedChat._id);
+        },
+    });
+
+    const [executeSendMessage] = useAsync<{ chatId: string; content: string }>({
+        delay: 500,
+        asyncFunction(payload) {
+            return messageService.sendMessage(
+                payload as { chatId: string; content: string }
+            );
+        },
+        onResolve(result: any) {
+            const { data } = result as { data: any };
+            console.log("send message successfully");
+            socket.emit("new message", data);
+            setChatMessage([...chatMessage, data]);
         },
     });
 
     useEffect(() => {
+        socket = io(SOCKET_URL_BASE);
+        socket.emit("setup", user);
+        socket.on("connected", () => console.log("Connected to socket.io"));
+
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
         if (JSON.stringify(selectedChat) !== "{}")
             executeFetchMessage(selectedChat._id);
+
+        selectedChatCompare = selectedChat;
+        // eslint-disable-next-line
     }, [selectedChat]);
+
+    useEffect(() => {
+        socket.on("message recieved", (newMessageRecieved: any) => {
+            if (
+                !selectedChatCompare || // if chat is not selected or doesn't match current chat
+                selectedChatCompare._id !== newMessageRecieved.chat._id
+            ) {
+                // if (!notification.includes(newMessageRecieved)) {
+                //     setNotification([newMessageRecieved, ...notification]);
+                //     setFetchAgain(!fetchAgain);
+                //   }
+                console.log("123");
+            } else {
+                console.log("re-render");
+                setChatMessage([...chatMessage, newMessageRecieved]);
+            }
+        });
+        // eslint-disable-next-line
+    }, []);
+
+    const handleSendMessage = () => {
+        executeSendMessage({
+            chatId: selectedChat._id,
+            content: message,
+        });
+    };
 
     return (
         <div
@@ -92,9 +148,10 @@ export const ContentChat = () => {
                         maxHeight={300}
                         sx={{ maxWidth: "100%" }}
                     >
-                        {content.length > 0 &&
-                            content.map((item: any) => (
+                        {chatMessage.length > 0 &&
+                            chatMessage.map((item: any, index: number) => (
                                 <Group
+                                    key={index}
                                     spacing={1}
                                     m={5}
                                     position={
@@ -147,7 +204,11 @@ export const ContentChat = () => {
                         onChange={(e) => setMessage(e.target.value)}
                     />
                     <Button size="lg" radius="lg">
-                        {message ? <IconSend /> : <IconMicrophone />}
+                        {message ? (
+                            <IconSend onClick={() => handleSendMessage()} />
+                        ) : (
+                            <IconMicrophone />
+                        )}
                     </Button>
                 </Group>
             </Center>

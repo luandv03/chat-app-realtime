@@ -1,4 +1,5 @@
 export const API_URL_BASE = "http://localhost:4000/";
+export const SOCKET_URL_BASE = "http://localhost:4000";
 
 export const AUTH_ROOT_ROUTE = "/auth";
 export const AUTH_LOGIN_ROUTE = "login";
