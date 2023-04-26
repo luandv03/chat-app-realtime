@@ -26,8 +26,9 @@ export class BaseRepository<T extends Document> {
     field?: any | null,
     option?: any | null,
     populate?: any | null,
+    sort?: any | null,
   ): Promise<T[]> {
-    return this.model.find(filter, field, option).populate(populate);
+    return this.model.find(filter, field, option).populate(populate).sort(sort);
   }
 
   async findAll(): Promise<T[]> {

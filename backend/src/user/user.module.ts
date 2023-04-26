@@ -11,13 +11,22 @@ import { JwtStrategy } from './strategies/jwt-auth.strategy';
 import { jwtConstrant } from './constrant/jwt.constrant';
 import { UserController } from './controllers/user.controller';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { MailModule } from 'src/mail/mail.module';
+import { ConfigModule } from '@nestjs/config';
+import { OtpSchema } from './model/otp.model';
+import { OtpRepository } from './repositories/otp.repository';
 
 @Module({
   imports: [
+    ConfigModule,
     MongooseModule.forFeature([
       {
         name: 'User',
         schema: UserSchema,
+      },
+      {
+        name: 'Otp',
+        schema: OtpSchema,
       },
     ]),
     PassportModule.register({
@@ -30,9 +39,16 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
       signOptions: { expiresIn: jwtConstrant.EXPIRES_IN },
     }),
     CloudinaryModule,
+    MailModule,
   ],
   controllers: [AuthController, UserController],
-  providers: [UserRepository, UserService, JwtStrategy, AuthService],
+  providers: [
+    UserRepository,
+    OtpRepository,
+    UserService,
+    JwtStrategy,
+    AuthService,
+  ],
   exports: [JwtStrategy, UserRepository],
 })
 export class UserModule {}

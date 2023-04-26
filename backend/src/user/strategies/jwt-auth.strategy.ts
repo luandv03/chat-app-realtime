@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from '../service/auth.service';
 import { jwtConstrant } from '../constrant/jwt.constrant';
+import { IProfile } from 'src/common/profile.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -25,8 +26,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   //By default, the 'validate()' method in strategy only sends the payload of the decrypted access token.
   //Ở đây nó sẽ tự động lấy token trên Header để giải mã (nhìn vào line 11 ở trên) sẽ được 1 Object (payload)
   //chứa { email, iat, exp } khi login chúng ta dùng jwtService.sign() bên authService
-  async validate(payload: any): Promise<any> {
-    const user = await this.authService.validate(payload.email);
+  async validate(payload: any): Promise<IProfile | any> {
+    const user: IProfile | any = await this.authService.validate(payload.email);
 
     return user;
   }

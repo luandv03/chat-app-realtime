@@ -14,6 +14,7 @@ export class ChatService {
     private readonly userRepository: UserRepository,
   ) {}
 
+  // truy cập đoạn chat 1-1 (nếu đã tồn tại) , nếu chưa tồn tại thì tạo
   async accessChat(user, userId): Promise<any> {
     let isChat = await this.chatRepository.findByCondition(
       {

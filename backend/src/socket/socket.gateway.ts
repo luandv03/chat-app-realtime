@@ -30,7 +30,11 @@ export class SocketGateway implements OnGatewayConnection {
   ) {
     socket.join(userData._id);
     socket.emit('connected');
-    console.log('set up:', socket.id);
+
+    socket.off('setup', () => {
+      console.log('USER DISCONNECTED');
+      socket.leave(userData._id);
+    });
   }
 
   @SubscribeMessage('join chat')
@@ -39,8 +43,7 @@ export class SocketGateway implements OnGatewayConnection {
     @ConnectedSocket() socket: Socket,
   ) {
     socket.join(chatId);
-    console.log('User Joined Room: ' + chatId);
-    console.log('join chat: ', socket.id);
+    console.log('User joined chat: ' + chatId);
   }
 
   @SubscribeMessage('new message')
@@ -55,7 +58,7 @@ export class SocketGateway implements OnGatewayConnection {
     chat.users.forEach((user) => {
       if (user._id == newMessageRecieved.sender._id) return;
 
-      socket.in(chat._id).emit('message recieved', newMessageRecieved);
+      socket.to(chat._id).emit('message recieved', newMessageRecieved);
     });
   }
 }

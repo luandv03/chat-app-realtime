@@ -1,27 +1,47 @@
+import { UserChangePasswordDto } from './../dto/user.dto';
+import { OtpRepository } from './../repositories/otp.repository';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Express } from 'express';
+import { ConfigService } from '@nestjs/config';
+import * as speakeasy from 'speakeasy';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto, LoginUserDto } from '../dto/user.dto';
 import { UserService } from './user.service';
 import { jwtConstrant } from '../constrant/jwt.constrant';
+import { MailService } from 'src/mail/mail.service';
+import { IResponse } from 'src/common/response.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly configService: ConfigService,
+    private readonly otpRepository: OtpRepository,
+    private readonly mailService: MailService,
   ) {}
 
   async register(
     createUserDto: CreateUserDto,
     file?: Express.Multer.File,
   ): Promise<any> {
-    if (file) {
-      const avatar = await this.userService.uploadImageToCloudinary(file);
-      createUserDto.avatar = { public_id: avatar.public_id, url: avatar.url };
+    const { otp, ...payload } = createUserDto;
+    const otpValid = await this.checkOtp(payload.email, otp);
+
+    if (!otpValid) {
+      throw new HttpException(
+        'Otp expired, please send again',
+        HttpStatus.NOT_ACCEPTABLE,
+      );
     }
 
-    const user = await this.userService.create(createUserDto);
+    if (file) {
+      const avatar = await this.userService.uploadImageToCloudinary(file);
+      payload.avatar = { public_id: avatar.public_id, url: avatar.url };
+    }
+
+    const user = await this.userService.create(payload);
     const token = await this._createToken(user.email);
 
     return {
@@ -126,5 +146,99 @@ export class AuthService {
     } catch (e) {
       throw new HttpException('Invalid token!', HttpStatus.UNAUTHORIZED);
     }
+  }
+
+  async sendOtp(email: string): Promise<any> {
+    const otp = speakeasy.totp({
+      secret: this.configService.get<string>('OTP_SECRET'),
+      encoding: 'base32',
+    });
+
+    const otpToken = {
+      email: email,
+      otp: otp,
+      expires: Date.now() + 2 * 2 * 1000,
+    };
+
+    await this.otpRepository.create(otpToken);
+    await this.mailService.sendMail({
+      to: email,
+      subject: 'Request Password',
+      context: {
+        email,
+        otp,
+      },
+      template: './request_reset_password',
+    });
+
+    return {
+      otp,
+    };
+  }
+
+  async resetPassword(
+    userChangePasswordDto: UserChangePasswordDto,
+  ): Promise<IResponse> {
+    const { email, otp } = userChangePasswordDto;
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      throw new HttpException('User not exist', HttpStatus.NOT_FOUND);
+    }
+
+    const otpValid = await this.checkOtp(email, otp);
+
+    if (!otpValid) {
+      throw new HttpException('Invalid OTP', HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    userChangePasswordDto.password = await bcrypt.hash(
+      userChangePasswordDto.password,
+      10,
+    );
+    await this.userService.update(
+      { email },
+      {
+        password: userChangePasswordDto.password,
+      },
+    );
+
+    return {
+      status: 'Successfully!',
+      msg: 'Changed Password',
+    };
+  }
+
+  async checkOtp(email: string, otp: string): Promise<boolean> {
+    const checkOtpValid = speakeasy.totp.verify({
+      secret: this.configService.get<string>('OTP_SECRET'),
+      encoding: 'base32',
+      token: otp,
+      window: 2, // 2 minutes
+    });
+
+    if (!checkOtpValid) {
+      throw new HttpException('Invalid OTP', HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    // kiem tra otp trong db cua user
+    const otpDb = await this.otpRepository.getByCondition(
+      {
+        email: email,
+      },
+      null,
+      null,
+      null,
+      { createdAt: -1 },
+    );
+
+    if (!otpDb[0]) {
+      throw new HttpException(
+        'Invalid OTP',
+        HttpStatus.NON_AUTHORITATIVE_INFORMATION,
+      );
+    }
+
+    return otp == otpDb[0].otp;
   }
 }

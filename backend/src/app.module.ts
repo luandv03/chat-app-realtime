@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { SocketModule } from './socket/socket.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SocketModule } from './socket/socket.module';
     MessageModule,
     CloudinaryModule,
     SocketModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
