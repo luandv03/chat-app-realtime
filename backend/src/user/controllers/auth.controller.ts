@@ -14,6 +14,7 @@ import { Express, Response, Request } from 'express';
 import { CreateUserDto, LoginUserDto } from '../dto/user.dto';
 import { AuthService } from '../service/auth.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { UserChangePasswordDto } from '../dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -49,11 +50,8 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     await this.authService.logout(req.user);
-    // const secretData = {
-    //   accessToken: null,
-    //   refreshToken: null,
-    // };
-    res.cookie('auth-cookie', '', { httpOnly: true });
+
+    res.clearCookie('auth-cookie');
 
     return {
       statusCode: 200,
@@ -75,7 +73,7 @@ export class AuthController {
     const authCookie = request?.cookies['auth-cookie'];
 
     //Refresh token to get access token
-    const data = await this.authService.refreshToken(authCookie.refreshToken);
+    const data = await this.authService.refreshToken(authCookie?.refreshToken);
 
     //Update accessToken to cookies
     const secretData = {
@@ -85,5 +83,17 @@ export class AuthController {
     res.cookie('auth-cookie', secretData, { httpOnly: true });
 
     return data;
+  }
+
+  @Get('send_otp')
+  async sendOtp(@Body('email') email: string): Promise<any> {
+    return this.authService.sendOtp(email);
+  }
+
+  @Post('reset_password')
+  async resetPassword(
+    @Body() userChangePasswordDto: UserChangePasswordDto,
+  ): Promise<any> {
+    return this.authService.resetPassword(userChangePasswordDto);
   }
 }

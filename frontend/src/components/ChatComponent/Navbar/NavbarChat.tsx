@@ -65,10 +65,14 @@ export const NavbarChat = () => {
     useEffect(() => {
         if (!debounced.trim()) return;
         executeSearch(debounced.trim());
+
+        // eslint-disable-next-line
     }, [debounced]);
 
     useEffect(() => {
         executeFetchChat();
+
+        // eslint-disable-next-line
     }, []);
 
     return (
@@ -76,6 +80,7 @@ export const NavbarChat = () => {
             width={{ base: 400 }}
             pl="xs"
             pr="xs"
+            pt="xs"
             sx={{ position: "relative", top: "0" }}
         >
             <Header height={50}>

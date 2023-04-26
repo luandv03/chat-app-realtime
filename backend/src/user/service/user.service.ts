@@ -1,8 +1,9 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
-import { CreateUserDto } from '../dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { IResponse } from 'src/common/response.interface';
+import { IProfile } from 'src/common/profile.interface';
 
 @Injectable()
 export class UserService {
@@ -11,7 +12,7 @@ export class UserService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async create(user: CreateUserDto): Promise<any> {
+  async create(user: any): Promise<any> {
     const userExisted = await this.findByEmail(user.email);
 
     if (userExisted) {
@@ -113,5 +114,37 @@ export class UserService {
 
   async destroyImageInCloudinary(public_id: string): Promise<any> {
     return await this.cloudinaryService.destroyImage(public_id);
+  }
+
+  //update profile
+  async updateProfile(user_id: string, update: any): Promise<IResponse> {
+    await this.userRepository.findByIdAndUpdate(user_id, update);
+
+    return {
+      status: 'Successfully',
+      msg: 'Updated profile',
+    };
+  }
+
+  //update avatar
+  async updateAvatar(user: any, file: Express.Multer.File): Promise<any> {
+    const inforFileFromCloud = await this.uploadImageToCloudinary(file);
+    const avatar = {
+      public_id: inforFileFromCloud.public_id,
+      url: inforFileFromCloud.url,
+    };
+
+    // xóa ảnh cũ lưu trên cloud
+    await this.destroyImageInCloudinary(user.avatar?.public_id);
+
+    return await this.updateProfile(user._id, { avatar });
+  }
+
+  // get profile user by id
+  async getProfileUserById(user_id: string): Promise<IProfile> {
+    return await this.userRepository.findByCondition(
+      { _id: user_id },
+      '-password -refeshToken',
+    );
   }
 }

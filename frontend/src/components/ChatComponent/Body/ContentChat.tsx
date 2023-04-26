@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import {
     Avatar,
     Group,
@@ -9,11 +9,13 @@ import {
     Container,
     Input,
     Center,
-    Button,
     ScrollArea,
+    ActionIcon,
+    Loader,
 } from "@mantine/core";
 import { IconMoodSmile, IconSend, IconMicrophone } from "@tabler/icons";
 import io from "socket.io-client";
+// import moment from "moment";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { IUser } from "../../../interfaces/user/user.interface";
 import { useAsync } from "../../../hooks/use-async";
@@ -26,6 +28,14 @@ export const ContentChat = () => {
     const [chatMessage, setChatMessage] = useState<any>([]);
     const { colorScheme } = useMantineColorScheme();
     const { selectedChat, user } = useContext(AuthContext);
+
+    const viewport = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () =>
+        viewport?.current?.scrollTo({
+            top: viewport?.current?.scrollHeight,
+            behavior: "smooth",
+        });
 
     const handleGetUserOther = () => {
         return selectedChat.users
@@ -47,7 +57,10 @@ export const ContentChat = () => {
         },
     });
 
-    const [executeSendMessage] = useAsync<{ chatId: string; content: string }>({
+    const [executeSendMessage, statusExecuteSendMessage] = useAsync<{
+        chatId: string;
+        content: string;
+    }>({
         delay: 500,
         asyncFunction(payload) {
             return messageService.sendMessage(
@@ -55,10 +68,15 @@ export const ContentChat = () => {
             );
         },
         onResolve(result: any) {
+            setMessage("");
+            scrollToBottom();
             const { data } = result as { data: any };
             console.log("send message successfully");
             socket.emit("new message", data);
-            setChatMessage([...chatMessage, data]);
+            setChatMessage((prevMessage: any) => [...prevMessage, data]);
+        },
+        onReject(error: any) {
+            alert(error.message);
         },
     });
 
@@ -78,6 +96,13 @@ export const ContentChat = () => {
         // eslint-disable-next-line
     }, [selectedChat]);
 
+    const handleSendMessage = () => {
+        executeSendMessage({
+            chatId: selectedChat._id,
+            content: message,
+        });
+    };
+
     useEffect(() => {
         socket.on("message recieved", (newMessageRecieved: any) => {
             if (
@@ -90,27 +115,19 @@ export const ContentChat = () => {
                 //   }
                 console.log("123");
             } else {
-                console.log("re-render");
                 setChatMessage([...chatMessage, newMessageRecieved]);
+                scrollToBottom();
             }
         });
         // eslint-disable-next-line
     }, []);
 
-    const handleSendMessage = () => {
-        executeSendMessage({
-            chatId: selectedChat._id,
-            content: message,
-        });
-    };
-
     return (
         <div
             style={{
-                height: "100vh",
-                padding: "10px",
                 flex: "1",
                 position: "relative",
+                height: "calc(100vh - 60px)",
             }}
         >
             <Header
@@ -145,13 +162,21 @@ export const ContentChat = () => {
                     "loading..."
                 ) : (
                     <ScrollArea.Autosize
-                        maxHeight={300}
-                        sx={{ maxWidth: "100%" }}
+                        maxHeight="calc(100vh - 60px - 60px - 80px)"
+                        sx={{
+                            maxWidth: "100%",
+                        }}
+                        viewportRef={viewport}
                     >
+                        {/* <Center>
+                                <Text size="md" weight={500}>
+                                    {selectedChat && selectedChat.createdAt}
+                                </Text>
+                            </Center> */}
                         {chatMessage.length > 0 &&
                             chatMessage.map((item: any, index: number) => (
                                 <Group
-                                    key={index}
+                                    key={item._id}
                                     spacing={1}
                                     m={5}
                                     position={
@@ -188,7 +213,7 @@ export const ContentChat = () => {
                     </ScrollArea.Autosize>
                 )}
             </Container>
-            <Center>
+            <Center sx={{ height: "30px" }}>
                 <Group
                     position="apart"
                     sx={{
@@ -201,15 +226,26 @@ export const ContentChat = () => {
                         size="lg"
                         placeholder="Message"
                         icon={<IconMoodSmile size={20} />}
+                        value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
-                    <Button size="lg" radius="lg">
-                        {message ? (
-                            <IconSend onClick={() => handleSendMessage()} />
-                        ) : (
+                    {message ? (
+                        <ActionIcon
+                            size="xl"
+                            radius="xl"
+                            onClick={() => handleSendMessage()}
+                        >
+                            {statusExecuteSendMessage === "pending" ? (
+                                <Loader />
+                            ) : (
+                                <IconSend />
+                            )}
+                        </ActionIcon>
+                    ) : (
+                        <ActionIcon size="xl" radius="xl">
                             <IconMicrophone />
-                        )}
-                    </Button>
+                        </ActionIcon>
+                    )}
                 </Group>
             </Center>
         </div>
