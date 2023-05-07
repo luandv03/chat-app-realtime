@@ -4,7 +4,7 @@ import { Message } from '../../message/model/message.model';
 
 export const ChatSchema = new mongoose.Schema(
   {
-    chatName: { type: String, trim: true },
+    chatName: { type: String, require: true, trim: true },
     isGroupChat: { type: Boolean, default: false },
     users: [
       {
@@ -12,7 +12,11 @@ export const ChatSchema = new mongoose.Schema(
         ref: 'User',
       },
     ],
-    latestMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
+    latestMessage: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Message',
+      default: null,
+    },
     groupAdmin: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   {
@@ -26,4 +30,5 @@ export interface Chat extends mongoose.Document {
   isGroupChat: boolean;
   users: User[];
   latestMessage: Message[];
+  groupAdmin: string;
 }

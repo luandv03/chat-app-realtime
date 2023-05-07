@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const handleGetMe = async () => {
             try {
                 setLoading(true);
-                const response = await authService.getProfile();
+                const response = await authService.getProfile({ hello: 1234 });
                 setUser(response.data);
                 setLoading(false);
                 navigate(

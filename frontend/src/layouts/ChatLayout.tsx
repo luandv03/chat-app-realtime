@@ -1,13 +1,6 @@
-import React, { FC, memo } from "react";
-import { MainChat } from "../components/ChatComponent";
+import React, { FC } from "react";
+import MainChat from "../components/MainChat/MainChat";
 
-export const Chat: FC = () => {
-    console.log("Chat layout");
-    return (
-        <>
-            <MainChat />
-        </>
-    );
+export const ChatLayout: FC = () => {
+    return <MainChat />;
 };
-
-export const ChatLayout = memo(Chat);

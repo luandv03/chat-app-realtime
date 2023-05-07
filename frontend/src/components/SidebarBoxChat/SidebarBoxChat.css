@@ -1,0 +1,89 @@
+/* phần access chat */
+.sidebar__box__chat {
+    width: 100%;
+    padding: 0 10px;
+    height: calc(100vh - var(--header-bar));
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.sidebar__box__chat::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar__box__chat::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.sidebar__box__chat::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+.sidebar__box__chat--list {
+    width: 100%;
+    margin: 0;
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar__box__chat--item {
+    height: 72px;
+    width: 100%;
+    border-radius: 8px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+}
+.sidebar__box__chat--item:hover {
+    background-color: #eae3e3;
+    cursor: pointer;
+}
+
+.sidebar__box__chat--item--item--avatar {
+    width: 62px;
+    height: 100%;
+}
+
+.sidebar__box__chat--item--item--avatar img {
+    width: 100%;
+}
+
+.sidebar__box__chat--item--item--infor {
+    margin-left: 15px;
+    flex: 1;
+}
+
+.sidebar__box__chat--item--item--infor--up {
+    display: flex;
+    justify-content: space-between;
+}
+
+.sidebar__box__chat--item--item--infor--up--name p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* number of lines to show */
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.sidebar__box__chat--item--item--infor span {
+    font-size: 15px;
+    color: #877d7d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* number of lines to show */
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.sidebar__box__chat--item--item--up--timesent span {
+    font-size: 12px;
+    color: #877d7d;
+}

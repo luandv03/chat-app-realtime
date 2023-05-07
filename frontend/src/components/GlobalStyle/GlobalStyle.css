@@ -1,0 +1,50 @@
+@import "../../base.css";
+
+* body {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-family: "Roboto", sans-serif;
+}
+
+html p {
+    margin: 0;
+}
+
+.app {
+    width: 100%;
+    background-color: rgb(83, 145, 238);
+}
+
+.app__header {
+    width: 100%;
+    height: var(--header-app);
+    padding: 4px 0;
+    display: none;
+}
+
+.app__header__box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 4px;
+}
+.app__header__box__logo {
+    width: 20px;
+    height: 20px;
+}
+.app__header__box--features {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.app__under {
+    width: 100%;
+    height: calc(100vh);
+}

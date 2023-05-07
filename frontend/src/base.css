@@ -1,0 +1,8 @@
+:root {
+    --header-app: 68px;
+    --header-bar: 50px;
+    --layout-background-light: #fff;
+    --layout-background-dark: #3333;
+    --space-layout: 10px;
+    --background-hover: #eae3e3;
+}

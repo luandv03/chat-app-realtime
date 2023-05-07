@@ -18,8 +18,8 @@ export class AuthService extends BaseService {
         return response;
     }
 
-    async getProfile() {
-        const response = await this.jwtClient.get("/auth/profile");
+    async getProfile(config: any) {
+        const response = await this.jwtClient.get("/auth/profile", config);
         return response;
     }
 

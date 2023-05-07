@@ -162,7 +162,6 @@ export const ContentChat = () => {
                     "loading..."
                 ) : (
                     <ScrollArea.Autosize
-                        maxHeight="calc(100vh - 60px - 60px - 80px)"
                         sx={{
                             maxWidth: "100%",
                         }}

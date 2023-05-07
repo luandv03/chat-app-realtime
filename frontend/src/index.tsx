@@ -1,10 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
+import { Provider } from "react-redux";
+
+import App from "./App";
+import "./index.css";
 import { ProviderTheme } from "./components/Theme";
+import { store } from "./redux/store.redux";
+import AuthProvider from "./providers/AuthProvider";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -12,11 +15,13 @@ const root = ReactDOM.createRoot(
 root.render(
     <React.StrictMode>
         <BrowserRouter>
-            <AuthProvider>
-                <ProviderTheme>
-                    <App />
-                </ProviderTheme>
-            </AuthProvider>
+            <ProviderTheme>
+                <Provider store={store}>
+                    <AuthProvider>
+                        <App />
+                    </AuthProvider>
+                </Provider>
+            </ProviderTheme>
         </BrowserRouter>
     </React.StrictMode>
 );

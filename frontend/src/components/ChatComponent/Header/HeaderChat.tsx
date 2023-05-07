@@ -130,7 +130,6 @@ export const HeaderChat = () => {
                     <Menu
                         width={260}
                         position="bottom-end"
-                        transition="pop-top-right"
                         onClose={() => setUserMenuOpened(false)}
                         onOpen={() => setUserMenuOpened(true)}
                     >

@@ -15,15 +15,16 @@ import {
 import { useForm, isEmail, hasLength } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { IconCheck, IconX, IconAt, IconLock } from "@tabler/icons";
-import { useNavigate } from "react-router-dom";
-import { useState, useContext } from "react";
-import { authService } from "../../services/auth.service";
-import { AuthContext } from "../../contexts/AuthContext";
+// import { useNavigate } from "react-router-dom";
+
+import { useAppDispatch, useAppSelector } from "../../redux/hooks.redux";
+import { login } from "../../redux/thunks/auth/login.thunk";
+// import { getProfile } from "../../redux/thunks/auth/getProfile.thunk";
 
 export function LoginAuth() {
-    const [loading, setLoading] = useState(false);
-
-    const { setUser } = useContext(AuthContext);
+    const loading = useAppSelector((state) => state.auth.loading);
+    const dispatch = useAppDispatch();
+    // const navigate = useNavigate();
 
     const form = useForm({
         initialValues: {
@@ -41,8 +42,6 @@ export function LoginAuth() {
             ),
         },
     });
-
-    const navigate = useNavigate();
 
     const handleError = (errors: typeof form.errors): void => {
         if (errors.password) {
@@ -63,30 +62,29 @@ export function LoginAuth() {
     };
 
     const handleValidate = async (values: typeof form.values) => {
-        try {
-            setLoading(true);
-            await authService.login(values);
-            setLoading(false);
-            showNotification({
-                message: "You login successfully!",
-                color: "yellow",
-                icon: <IconCheck />,
-                autoClose: 3000,
+        dispatch(login(values))
+            .unwrap()
+            .then((res) => {
+                console.log(res);
+                showNotification({
+                    message: "You login successfully!",
+                    color: "yellow",
+                    icon: <IconCheck />,
+                    autoClose: 3000,
+                });
+                // dispatch(getProfile());
+                // navigate("/chat");
+                form.reset();
+            })
+            .catch((error) => {
+                showNotification({
+                    title: "Login failure!",
+                    message: error.message,
+                    color: "red",
+                    icon: <IconX />,
+                    autoClose: 3000,
+                });
             });
-            const response = await authService.getProfile();
-            setUser(response.data);
-            navigate("/chat");
-            form.reset();
-        } catch (error: any) {
-            showNotification({
-                title: "Login failure!",
-                message: error.response.data.message,
-                color: "red",
-                icon: <IconX />,
-                autoClose: 3000,
-            });
-            setLoading(false);
-        }
     };
 
     return (

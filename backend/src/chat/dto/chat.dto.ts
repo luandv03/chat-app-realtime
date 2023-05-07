@@ -2,7 +2,7 @@ import { IsNotEmpty, ArrayMinSize } from 'class-validator';
 
 export class CreateGroupDto {
   @IsNotEmpty()
-  name: string;
+  chatName: string;
 
   @ArrayMinSize(2)
   users: string[];

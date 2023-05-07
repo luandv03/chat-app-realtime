@@ -1,4 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+
 import { ChatRepository } from '../repositories/chat.repository';
 import { UserRepository } from '../../user/repositories/user.repository';
 import {
@@ -55,7 +56,7 @@ export class ChatService {
           },
           null,
           null,
-          { path: 'users', select: '-password' },
+          { path: 'users', select: '-password -refreshToken' },
         );
 
         return fullChat;
@@ -70,15 +71,30 @@ export class ChatService {
       let chatUser: any = await this.chatRepository.getByCondition(
         {
           users: { $elemMatch: { $eq: user._id } },
-          latestMessage: { $exists: true },
-        },
-        null,
+          $or: [
+            {
+              $and: [
+                {
+                  $eq: { isGroupChat: false },
+                  latestMessage: {
+                    $exists: true,
+                  },
+                },
+              ],
+            },
+            {
+              $eq: { isGroupChat: true },
+            },
+          ], // đoạn này cần check: nếu đoạn chat giữa 2 users thì phải check                                             //
+        }, // có latestMessage, còn nếu là chat nhóm thì không cần
+        '-users -groupAdmin', // where (isGroupChat == false && lastestMessage != null) or (isGroupChat == true)
         null,
         [
-          { path: 'users', select: '-password' },
+          // { path: 'users', select: '-password -refreshToken' },
           { path: 'latestMessage' },
-          { path: 'groupAdmin', select: '-password' },
+          // { path: 'groupAdmin', select: '-password -refreshToken' },
         ],
+        { updatedAt: -1 },
       );
 
       chatUser = await this.userRepository.populate(chatUser, {
@@ -93,14 +109,14 @@ export class ChatService {
   }
 
   async createGroup(user: any, groupChat: any): Promise<any> {
-    if (!groupChat.name || !groupChat.users) {
+    if (!groupChat.chatName || !groupChat.users) {
       throw new HttpException('Please fill all field!', HttpStatus.BAD_REQUEST);
     }
 
     groupChat.users.push(user._id);
 
     const group = await this.chatRepository.create({
-      chatName: groupChat?.chatName,
+      chatName: groupChat.chatName,
       isGroupChat: true,
       users: groupChat.users,
       groupAdmin: user._id,

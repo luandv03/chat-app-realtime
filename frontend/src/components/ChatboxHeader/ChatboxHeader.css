@@ -1,0 +1,60 @@
+/* phần đầu của box chat */
+.content__header {
+    height: 50px;
+    width: 100%;
+    padding: 4px 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.content__header__infor {
+    display: flex;
+
+    height: 100%;
+}
+.content__header__infor--avatar {
+    height: 100%;
+}
+
+.content__header__infor--avatar img {
+    width: 45px;
+    height: 100%;
+}
+
+.content__header__infor--name {
+    margin-left: 15px;
+    height: 100%;
+}
+
+.content__header__infor--name p {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.content__header__infor--name span {
+    font-size: 15px;
+    color: #878787;
+}
+
+.content__header__features {
+    display: flex;
+    align-items: center;
+}
+.content__header__features--icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    border-radius: 50rem;
+    text-align: center;
+    margin-left: 5px;
+}
+
+.content__header__features--icon i {
+    line-height: 40px;
+}
+
+.content__header__features--icon:hover {
+    background-color: var(--background-hover);
+    cursor: pointer;
+}
